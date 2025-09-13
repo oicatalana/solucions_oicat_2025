@@ -465,12 +465,62 @@ int main() {
 
 ## [Problema C4. Obres](https://jutge.org/problems/V78601) <a name="C4"/>
 
-En construcció...
+Tenim unes obres, de les quals mesurem l'estat diàriament mitjançant una puntuació numèrica. Al dia 0 considerem que les obres tenen 0 punts. Cada dia, s'incrementa o disminueix la puntuació de les obres seguint una seqüència donada, que es repeteix cíclicament. Volem trobar el primer dia tal que el valor total mai baixarà de $p$.
+
+Per resoldre aquest problema cal adonar-se de dues idees clau:
+- És complicat trobar la resposta simulant el problema "cap endavant" (és a dir, tot i que la puntuació en el dia actual sigui $>= p$, com garantim que més endavant no tornem a baixar de $p$?), però és fàcil simulant-ho "cap enrere" (si sabem que la resposta és com a molt $d$, aleshores anem des del dia $d$ cap a enrere, i si el primer dia on baixem de $p$ és el dia $x$, aleshores la resposta és $x + 1$).
+- Tot i que no podem simular el procés dia a dia (amb els valors donats, podria trigar fins a $\sim 10^{10}$ dies a acabar), podem trobar una resposta aproximada (i.e. un dia $d$ tal que garantim que la resposta és com a molt $d$, i que $d$ no està "massa lluny" de la resposta), i simular des d'allà.
+
+Anem ara a explicar amb més detall com funciona la nostra solució. Si calculem la suma de tots els increments al llarg d'un cicle, i li diem $s$, aleshores tenim que la diferència de puntuació entre el dia $d$ i el dia $d + n$ serà de $s$. A l'enunciat ens garanteixen que $s$ és positiva, així que la puntuació a cada dia del cicle anirà augmentant fins que en tots els dies del cicle tenim un valor $\geq p$. Així doncs, podem trobar una fita superior de la resposta amb el procediment següent:
+- Trobem el dia $1 \leq d \leq n$ amb la puntuació mínima (és a dir, el dia amb puntuació mínima dins la primera iteració del cicle).
+- Calculem quin valor de $i$ necessitem per tal que la puntuació al dia $d + i \cdot n$ sigui $\geq p$ (és a dir, quantes vegades hem d'iterar el cicle per tal que el valor al dia $d$ sigui $\geq p$).
+
+Això ens garanteix que els valors als dies $j + i \cdot n$, per tot $1 \leq j \leq n$ seran tots $\geq p$ (altrament $d$ no seria el dia amb la puntuació mínima de la primera iteració).
+
+Així doncs, sabem que la resposta serà com a molt $i \cdot n$. A més, sabem que la resposta serà com a mínim $(i-1) \cdot n$, ja que altrament $d + (i-1)\cdot n \geq p$. Per tant, simulant el procés cap enrere a partir del dia $i \cdot n$, com a molt trigarem $n$ iteracions en trobar un dia amb puntuació $< p$.
 
 <details><summary><b>Codi (C++)</b></summary>
 
 ```cpp
+#include<bits/stdc++.h>
+using namespace std;
 
+using ll = long long;
+
+int main() {
+  int p, n; // p := puntuació desitjada; n:= mida del cicle.
+  while(cin >> p >> n) {
+    vector<int> v(n); // v[i] := increment el i-èssim dia del cicle.
+    for(int& x : v)
+      cin >> x;
+    ll punts_minims = 0; // Minima puntuació en la primera iteració del cicle.
+    ll punts_actuals = 0;
+    for(int i = 0; i < n; ++i) {
+      punts_actuals += v[i];
+      punts_minims = min(punts_minims, punts_actuals);
+    }
+    ll increment_cicle = punts_actuals; // Increment en una iteració del cicle.
+
+    // Sabem que la resposta estarà entre la iteració 'i-1' i la 'i', on 'i' és
+    // el valor més petit que compleix que: 
+    //
+    // punts_minims + increment_cicle * i  >=  p
+
+    // Aïllem 'i' de la fórmula anterior, arrodonint cap amunt:
+    ll i = (p - punts_minims + increment_cicle - 1) / increment_cicle; 
+    ll dia = i * n; // Dia que acaba la iteració 'i' del cicle.
+    punts_actuals *= i; // Puntuació en aquell moment.
+
+    // Iterem cap enrere:
+    while(punts_actuals >= p) {
+      --dia;
+      punts_actuals -= v[dia%n];
+    }
+
+    // 'dia' és l'últim dia que tindrà una puntuació inferior a p.
+    cout << dia + 1 << endl;
+  }
+}
 ```
 </details>
 
