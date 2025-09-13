@@ -468,7 +468,7 @@ int main() {
 Tenim unes obres, de les quals mesurem l'estat diàriament mitjançant una puntuació numèrica. Al dia 0 considerem que les obres tenen 0 punts. Cada dia, s'incrementa o disminueix la puntuació de les obres seguint una seqüència donada, que es repeteix cíclicament. Volem trobar el primer dia tal que el valor total mai baixarà de $p$.
 
 Per resoldre aquest problema cal adonar-se de dues idees clau:
-- És complicat trobar la resposta simulant el problema "cap endavant" (és a dir, tot i que la puntuació en el dia actual sigui $>= p$, com garantim que més endavant no tornem a baixar de $p$?), però és fàcil simulant-ho "cap enrere" (si sabem que la resposta és com a molt $d$, aleshores anem des del dia $d$ cap a enrere, i si el primer dia on baixem de $p$ és el dia $x$, aleshores la resposta és $x + 1$).
+- És complicat trobar la resposta simulant el problema "cap endavant" (és a dir, tot i que la puntuació en el dia actual sigui $>= p$, com garantim que més endavant no tornem a baixar de $p$?), però és fàcil simulant-ho "cap enrere" (si sabem que la resposta és com a molt $d$, aleshores anem des del dia $d$ cap a enrere, i si el primer dia on baixem de $p$ és el dia $x$, la resposta serà $x + 1$).
 - Tot i que no podem simular el procés dia a dia (amb els valors donats, podria trigar fins a $\sim 10^{10}$ dies a acabar), podem trobar una resposta aproximada (i.e. un dia $d$ tal que garantim que la resposta és com a molt $d$, i que $d$ no està "massa lluny" de la resposta), i simular des d'allà.
 
 Anem ara a explicar amb més detall com funciona la nostra solució. Si calculem la suma de tots els increments al llarg d'un cicle, i li diem $s$, aleshores tenim que la diferència de puntuació entre el dia $d$ i el dia $d + n$ serà de $s$. A l'enunciat ens garanteixen que $s$ és positiva, així que la puntuació a cada dia del cicle anirà augmentant fins que en tots els dies del cicle tenim un valor $\geq p$. Així doncs, podem trobar una fita superior de la resposta amb el procediment següent:
@@ -527,12 +527,42 @@ int main() {
 
 ## [Problema G2. Fractal deformat](https://jutge.org/problems/V43125) <a name="G2"/>
 
-En construcció...
+En aquests problema ens demanen implementar un procediment que genera imatges semblants al Triangle de Sierpinski, però deformades.
+
+La dificultat principal rau en saber enumerar eficientment els subconjunts de mida $\leq k$ de $\\\{1, 2, \dots, n\\\}$, i de calcular-ne la mida de la intersecció.
+
+Igual que en el problema Q2, resultarà útil representar un subconjunt $S \subseteq \\\{1, \dots, n \\\}$ com un vector $v$ de mida $n$ format per zeros i uns, on $v_i = 1$ si $i \in S$. Aquests vectors es corresponen bijectivament amb els nombres de $0$ fins a $2^n - 1$ (pensant-los com la seva expansió binària). Aleshores, els subconjunts de mida $\leq k$ vindran codificats pels nombres $x$ entre $0$ i $2^n - 1$ que tinguin com a molt $k$ uns a la seva expansió binària.
+
+Calcular-ne la intersecció és també senzill amb aquesta representació: es correspon a fer-ne un `AND` bit a bit (ja que el vector corresponent a la intersecció tindrà un 1 en les posicions on els dos vectors originals tenien un 1). Igual que en C++, a Python3 es pot fer el `AND` bit a bit de dos enters $x$ i $y$ mitjançant `x & y`.
 
 <details><summary><b>Codi (Python3)</b></summary>
 
 ```py
+from PIL import Image, ImageDraw
+from easyinput import read
 
+# Retorna el nombre d'uns en l'expansió binària de 'x' 
+def Mida(x):
+    ans = 0
+    while x:
+        ans += x%2
+        x //= 2
+    return ans
+
+
+n, k = read(int,int)
+subconjunts = [x for x in range(2**n) if Mida(x) <= k]
+N = len(subconjunts)
+
+img = Image.new('RGB', (N, N), 'Black')
+dib = ImageDraw.Draw(img)
+
+for i in range(N):
+    for j in range(N):
+        m = Mida(subconjunts[i] & subconjunts[j])
+        dib.point((i, j), (255 // (m + 1), 0, 0))
+
+img.save('output.png')
 ```
 </details>
 
