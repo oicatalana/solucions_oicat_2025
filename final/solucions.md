@@ -638,7 +638,7 @@ Suposem que llegim la paraula com una string `s`. Per guardar-nos les parelles v
 
 Com resolem el problema? L'estructura del problema ens suggereix una solució recursiva, on definim $f(i)$ com el nombre de maneres de dividir la paraula fins a la posició $i$-èssima, i llavors calculem cada $f(i)$ en funció dels anteriors mitjançant la fórmula:
 
-$$ f(i) = \sum_{j = 0}{i} f(j-1) \cdot \operatorname{es_valid}[s[j]][s[i]]$$
+$$ f(i) = \sum_{j = 0}{i} f(j-1) \cdot \text{es_valid}[s[j]][s[i]]$$
 
 És a dir, per dividir la paraula fins a la posició $i$-èssima, iterem per totes les possibles posicions $j$ on pot començar l'últim segment, i sumem $f(j-1)$ (el nombre de maneres de dividir la paraula fins a la posició $(j-1)$-èssima). Tingueu en compte que per simplificar l'expressió estem definint $f(-1) := 1$.
 
@@ -648,13 +648,13 @@ Pels valors de $n$ que ens dona el problema ($n \leq 10^5$), la solució anterio
 
 La clau consisteix en adonar-se que podem expressar la fórmula per calcular $f(i)$ com:
 
-$$ f(i) = \sum_{c = \texttt{'a'}}{\texttt{'z'}} \operatorname{acumulat}(c) \cdot \operatorname{es_valid}[c][s[i]]$$
+$$ f(i) = \sum_{c = \texttt{'a'}}{\texttt{'z'}} \text{acumulat}(c) \cdot \text{es_valid}[c][s[i]]$$
 
-on definim $\operatorname{acumulat}(c)$ com la suma de $f(j-1)$ per les $j$ tals que `s[j] == c`.
+on definim $\text{acumulat}(c)$ com la suma de $f(j-1)$ per les $j$ tals que `s[j] == c`.
 
 Donat que ara només hem d'iterar pels 26 caràcters diferents (en lloc de per totes les posicions anteriors), això ens redueix la complexitat de la solució a $\mathcal O(26 \cdot n) = \mathcal O(n)$.
 
-Només falta veure que podem mantenir els valors de $\operatorname{acumulat}(c)$ actualitzats eficientment. Però això és senzill: cada cop que processem un caràcter $i$, afegim $f(i-1)$ a $\operatorname{acumulat}(s[i])$ (important fer-ho abans de calcular $f(i)$, ja que és vàlid començar i acabar un segment a la posició $i$-èssima).
+Només falta veure que podem mantenir els valors de $\text{acumulat}(c)$ actualitzats eficientment. Però això és senzill: cada cop que processem un caràcter $i$, afegim $f(i-1)$ a $\text{acumulat}(s[i])$ (important fer-ho abans de calcular $f(i)$, ja que és vàlid començar i acabar un segment a la posició $i$-èssima).
 
 A continuació us donem una possible implementació. També ho podeu fer amb una funció recursiva si ho preferiu, però recordeu utilitzar programació dinàmica per evitar repetir càlculs!
 
