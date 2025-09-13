@@ -644,11 +644,11 @@ $$ f(i) = \sum_{j = 0}{i} f(j-1) \cdot \texttt{es_valid}[s[j]][s[i]]$$
 
 Per evitar calcular de nou valors de $f$ que ja haguem calculat, utilitzem la tècnica de la <a href="https://aprende.olimpiada-informatica.org/algoritmia-dinamica-1">programació dinàmica</a>. El cost total d'aquesta solució seria $\mathcal O(n^2)$ (hem de calcular $\mathcal O(n)$ valors de $f$, i cada un ens costa $\mathcal O(n)$ ).
 
-Pels valors de $n$ que ens dona el problema ($n \leq 10^5$), la solució anterior ens trigarà massa, així que hem de buscar la manera d'optimitzar-la.
+Pels valors de $n$ que ens dona el problema ($n \leq 10^5$), la solució anterior trigarà massa, així que hem de buscar la manera d'optimitzar-la.
 
 La clau consisteix en adonar-se que podem expressar la fórmula per calcular $f(i)$ com:
 
-$$ f(i) = \sum_{c = \texttt{'a'}}{\texttt{'z'}} \text{acumulat}(c) \cdot \texttt{es_valid}[c][s[i]] $$
+$$ f(i) = \sum_{c = \texttt{'a'}}{\texttt{'z'}} \text{acumulat}(c) \cdot \texttt{esvalid}[c][s[i]] $$
 
 on definim $\text{acumulat}(c)$ com la suma de $f(j-1)$ per les $j$ tals que `s[j] == c`.
 
