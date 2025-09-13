@@ -642,7 +642,7 @@ $$ f(i) = \sum_{j = 0}{i} f(j-1) \cdot \texttt{es_valid}[s[j]][s[i]]$$
 
 És a dir, per dividir la paraula fins a la posició $i$-èssima, iterem per totes les possibles posicions $j$ on pot començar l'últim segment, i sumem $f(j-1)$ (el nombre de maneres de dividir la paraula fins a la posició $(j-1)$-èssima). Tingueu en compte que per simplificar l'expressió estem definint $f(-1) := 1$.
 
-Per evitar calcular de nou valors de $f$ que ja haguem calculat, utilitzem la tècnica de la <a href="https://aprende.olimpiada-informatica.org/algoritmia-dinamica-1">programació dinàmica</a>. El cost total d'aquesta solució seria $\mathcal O(n^2)$ (hem de calcular $\mathcal O(n)$ valors de $f$, i cada un ens costa $\mathcal O(n)$).
+Per evitar calcular de nou valors de $f$ que ja haguem calculat, utilitzem la tècnica de la <a href="https://aprende.olimpiada-informatica.org/algoritmia-dinamica-1">programació dinàmica</a>. El cost total d'aquesta solució seria $\mathcal O(n^2)$ (hem de calcular $\mathcal O(n)$ valors de $f$, i cada un ens costa $\mathcal O(n)$ ).
 
 Pels valors de $n$ que ens dona el problema ($n \leq 10^5$), la solució anterior ens trigarà massa, així que hem de buscar la manera d'optimitzar-la.
 
