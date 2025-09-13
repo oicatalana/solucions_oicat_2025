@@ -638,7 +638,7 @@ Suposem que llegim la paraula com una string `s`. Per guardar-nos les parelles v
 
 Com resolem el problema? L'estructura del problema ens suggereix una solució recursiva, on definim $f(i)$ com el nombre de maneres de dividir la paraula fins a la posició $i$-èssima, i llavors calculem cada $f(i)$ en funció dels anteriors mitjançant la fórmula:
 
-$$ f(i) = \sum_{j = 0}^{i} f(j-1) \cdot \texttt{es_valid}[s[j]][s[i]]$$
+$f(i) = \sum_{j = 0}^{i} f(j-1) \cdot \texttt{es_valid}[s[j]][s[i]]$
 
 És a dir, per dividir la paraula fins a la posició $i$-èssima, iterem per totes les possibles posicions $j$ on pot començar l'últim segment, i sumem $f(j-1)$ (el nombre de maneres de dividir la paraula fins a la posició $(j-1)$-èssima). Tingueu en compte que per simplificar l'expressió estem definint $f(-1) := 1$.
 
