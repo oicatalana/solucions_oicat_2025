@@ -654,7 +654,7 @@ on definim $\text{acumulat}(c)$ com la suma de $f(j-1)$ per les $j$ tals que $s_
 
 Donat que ara només hem d'iterar pels 26 caràcters diferents (en lloc de per totes les posicions anteriors), això ens redueix la complexitat de la solució a $\mathcal O(26 \cdot n) = \mathcal O(n)$.
 
-Només falta veure que podem mantenir els valors de $\text{acumulat}(c)$ actualitzats eficientment. Però això és senzill: quan processem el caràcter $i$-èssim, afegim $f(i-1)$ a $\text{acumulat}(s_i)$ (important fer-ho abans de calcular $f(i)$, ja que és vàlid començar i acabar un segment a la posició $i$-èssima).
+Només falta veure que podem mantenir els valors de $\text{acumulat}(c)$ actualitzats eficientment. Però això és senzill: quan processem el caràcter $i$-èssim, afegim $f(i-1)$ a $\text{acumulat}(s_i)$. Simplement aneu amb compte de fer-ho abans de calcular $f(i)$, ja que és vàlid començar i acabar un segment a la posició $i$-èssima).
 
 A continuació us donem una possible implementació. També ho podeu fer amb una funció recursiva si ho preferiu, però recordeu utilitzar programació dinàmica per evitar repetir càlculs!
 
