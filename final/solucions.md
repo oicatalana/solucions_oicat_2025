@@ -575,7 +575,55 @@ En construcció...
 <details><summary><b>Codi (C++)</b></summary>
 
 ```cpp
+#include<bits/stdc++.h>
+using namespace std;
+ 
+int main(){
+  int n, m;
+  while(cin >> n >> m) {
+    // Llegim el tauler:
+    vector<string> tauler(n);
+    for(string& s : tauler) 
+      cin >> s;
 
+    // Retorna true si es pot col·locar una 'L' amb l'extrem superior esquerre a la posició (r, c)
+    // (del revés si 'girada' == True).
+    function<bool(int,int,bool)> EsPotColocar = [&](int r, int c, bool girada) {
+      if(r + 2 >= n or c + 1 >= m or tauler[r][c] == 'X' or tauler[r+2][c+1] == 'X')
+        return false;
+      if(girada) 
+        return tauler[r][c+1] == '.' and tauler[r+1][c+1] == '.';
+      return tauler[r+1][c] == '.' and tauler[r+2][c] == '.';
+    };
+
+    // Col·loca una 'L' amb l'extrem superior esquerre a la posició (r, c)
+    // (del revés, si 'girada' == True).
+    function<void(int,int,bool)> Coloca = [&](int r, int c, bool girada) {
+      tauler[r][c] = tauler[r+2][c+1] = 'X';
+      if(girada) 
+        tauler[r][c+1] = tauler[r+1][c+1] = 'X';
+      else
+        tauler[r+1][c] = tauler[r+2][c] = 'X';
+    };
+
+    bool es_possible = true; // True si es pot omplir el tauler amb 'L's.
+    for(int i = 0; i < n and es_possible; ++i) {
+      for(int j = 0; j < m and es_possible; ++j) {
+        if(tauler[i][j] == '.') {
+          // Si podem col·locar la 'L' del dret, la col·loquem.
+          if(EsPotColocar(i, j, true))
+            Coloca(i, j, true);
+          // Altrament, mirem de col·locar-la del revés.
+          else if(EsPotColocar(i, j, false))
+            Coloca(i, j, false);
+          else 
+            es_possible = false;
+        }
+      }
+    }
+    cout << (es_possible? "si" : "no") << endl;
+  }
+}
 ```
 </details>
 
@@ -584,11 +632,66 @@ En construcció...
 
 ## [Problema C6. Aminoàcids alienígenes](https://jutge.org/problems/T50529) <a name="C6"/>
 
-En construcció...
+En aquest problema ens demanen comptar el nombre de maneres de dividir una paraula en segments consecutius, sota la restricció que cada segment ha de començar i acabar per una parella de caràcters "vàlida" (és a dir, pertanyent a una certa llista que se'ns dona al principi).
+
+Suposem que llegim la paraula com una string `s`. Per guardar-nos les parelles vàlides, tenim diverses opcions (un `std::set`, un `std::map`, etc.) però el més eficient a l'hora d'accedir-hi és guardar-nos-ho en un vector de vectors de booleans de mida $26 \times 26$, que anomenarem `es_valida`, on tindrem que `es_valida[i][j]` serà `true` si la parella formada per la $i$-èssima i la $j$-èssima lletra és vàlida. Per exemple, `es_valida[0][2]` correspondria a la parella `ac`.  
+
+Com resolem el problema? L'estructura del problema ens suggereix una solució recursiva, on definim $f(i)$ com el nombre de maneres de dividir la paraula fins a la posició $i$-èssima, i llavors calculem cada $f(i)$ en funció dels anteriors mitjançant la fórmula:
+
+$$ f(i) = \sum_{j = 0}{i} f(j-1) \cdot \operatorname{es_valid}[s[j]][s[i]]$$
+
+És a dir, per dividir la paraula fins a la posició $i$-èssima, iterem per totes les possibles posicions $j$ on pot començar l'últim segment, i sumem $f(j-1)$ (el nombre de maneres de dividir la paraula fins a la posició $(j-1)$-èssima). Tingueu en compte que per simplificar l'expressió estem definint $f(-1) := 1$.
+
+Per evitar calcular de nou valors de $f$ que ja haguem calculat, utilitzem la tècnica de la <a href="https://aprende.olimpiada-informatica.org/algoritmia-dinamica-1">programació dinàmica</a>. El cost total d'aquesta solució seria $\mathcal O(n^2)$ (hem de calcular $\mathcal O(n)$ valors de $f$, i cada un ens costa $\mathcal O(n)$).
+
+Pels valors de $n$ que ens dona el problema ($n \leq 10^5$), la solució anterior ens trigarà massa, així que hem de buscar la manera d'optimitzar-la.
+
+La clau consisteix en adonar-se que podem expressar la fórmula per calcular $f(i)$ com:
+
+$$ f(i) = \sum_{c = \texttt{'a'}}{\texttt{'z'}} \operatorname{acumulat}(c) \cdot \operatorname{es_valid}[c][s[i]]$$
+
+on definim $\operatorname{acumulat}(c)$ com la suma de $f(j-1)$ per les $j$ tals que `s[j] == c`.
+
+Donat que ara només hem d'iterar pels 26 caràcters diferents (en lloc de per totes les posicions anteriors), això ens redueix la complexitat de la solució a $\mathcal O(26 \cdot n) = \mathcal O(n)$.
+
+Només falta veure que podem mantenir els valors de $\operatorname{acumulat}(c)$ actualitzats eficientment. Però això és senzill: cada cop que processem un caràcter $i$, afegim $f(i-1)$ a $\operatorname{acumulat}(s[i])$ (important fer-ho abans de calcular $f(i)$, ja que és vàlid començar i acabar un segment a la posició $i$-èssima).
+
+A continuació us donem una possible implementació. També ho podeu fer amb una funció recursiva si ho preferiu, però recordeu utilitzar programació dinàmica per evitar repetir càlculs!
 
 <details><summary><b>Codi (C++)</b></summary>
 
 ```cpp
+#include <bits/stdc++.h>
+using namespace std;
 
+int main() {
+    string s;
+    while(cin >> s) {
+        int k;
+        cin >> k;
+        int N = 'z' - 'a' + 1;
+        vector<vector<bool>> valid(N, vector<bool>(N, false));
+        for(int i = 0; i < k; ++i){
+            char a, b;
+            cin >> a >> b;
+            valid[a-'a'][b-'a'] = true;
+        }
+        int const MOD = 1e8 + 7;
+        int const n = s.size();
+        vector<int> dp(n, 0); // dp[i] := maneres de dividir s[0..i]
+        vector<int> acumulat(N, 0); // acumulat[c] := suma de dp[j-1] per tots els j tals que s[j] == c
+        for(int i = 0; i < n; ++i) {
+            acumulat[s[i]-'a'] += (i == 0? 1 : dp[i-1]);
+            acumulat[s[i]-'a'] %= MOD;
+            for(int c = 0; c < N; ++c) {
+                if(valid[c][s[i]-'a']) {
+                    dp[i] += acumulat[c];
+                    dp[i] %= MOD;
+                }
+            }
+        }
+        cout << dp[n-1] << endl;
+    }
+}
 ```
 </details>
