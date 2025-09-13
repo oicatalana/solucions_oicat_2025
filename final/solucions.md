@@ -637,9 +637,7 @@ En aquest problema ens demanen comptar el nombre de maneres de dividir una parau
 Suposem que llegim la paraula com una string `s`. Per guardar-nos les parelles vàlides, tenim diverses opcions (un `std::set`, un `std::map`, etc.) però el més eficient a l'hora d'accedir-hi és guardar-nos-ho en un vector de vectors de booleans de mida $26 \times 26$, que anomenarem `es_valida`, on tindrem que `es_valida[i][j]` serà `true` si la parella formada per la $i$-èssima i la $j$-èssima lletra és vàlida. Per exemple, `es_valida[0][2]` correspondria a la parella `ac`.  
 
 Com resolem el problema? L'estructura del problema ens suggereix una solució recursiva, on definim $f(i)$ com el nombre de maneres de dividir la paraula fins a la posició $i$-èssima, i llavors calculem cada $f(i)$ en funció dels anteriors mitjançant la fórmula:
-
-$f(i) = \sum_{j = 0}^{i} f(j-1) \cdot \texttt{es_valid}[s[j]][s[i]]$
-
+$$ f(i) = \sum_{j = 0}^{i} f(j-1) \cdot \texttt{es_valid}[s[j]][s[i]] $$
 És a dir, per dividir la paraula fins a la posició $i$-èssima, iterem per totes les possibles posicions $j$ on pot començar l'últim segment, i sumem $f(j-1)$ (el nombre de maneres de dividir la paraula fins a la posició $(j-1)$-èssima). Tingueu en compte que per simplificar l'expressió estem definint $f(-1) := 1$.
 
 Per evitar calcular de nou valors de $f$ que ja haguem calculat, utilitzem la tècnica de la <a href="https://aprende.olimpiada-informatica.org/algoritmia-dinamica-1">programació dinàmica</a>. El cost total d'aquesta solució seria $\mathcal O(n^2)$ (hem de calcular $\mathcal O(n)$ valors de $f$, i cada un ens costa $\mathcal O(n)$ ).
