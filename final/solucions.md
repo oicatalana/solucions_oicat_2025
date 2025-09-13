@@ -638,7 +638,7 @@ Suposem que llegim la paraula com una string `s`. Per guardar-nos les parelles v
 
 Com resolem el problema? L'estructura del problema ens suggereix una solució recursiva, on definim $f(i)$ com el nombre de maneres de dividir la paraula fins a la posició $i$-èssima, i llavors calculem cada $f(i)$ en funció dels anteriors mitjançant la fórmula:
 
-$$f(i) = \sum_{j = 0}^{i} f(j-1) \cdot \texttt{es\_valid}[s[j]][s[i]]$$
+$$f(i) = \sum_{j = 0}^{i} f(j-1) \cdot \text{es\_valid}[s[j]][s[i]]$$
 
 És a dir, per dividir la paraula fins a la posició $i$-èssima, iterem per totes les possibles posicions $j$ on pot començar l'últim segment, i sumem $f(j-1)$ (el nombre de maneres de dividir la paraula fins a la posició $(j-1)$-èssima). Tingueu en compte que per simplificar l'expressió estem definint $f(-1) := 1$.
 
@@ -648,7 +648,7 @@ Pels valors de $n$ que ens dona el problema ($n \leq 10^5$), la solució anterio
 
 La clau consisteix en adonar-se que podem expressar la fórmula per calcular $f(i)$ com:
 
-$$ f(i) = \sum_{c = \texttt{'a'}}^{\texttt{'z'}} \text{acumulat}(c) \cdot \texttt{es\_valid}[c][s[i]] $$
+$$ f(i) = \sum_{c = \text{'a'}}^{\text{'z'}} \text{acumulat}(c) \cdot \text{es\_valid}[c][s[i]] $$
 
 on definim $\text{acumulat}(c)$ com la suma de $f(j-1)$ per les $j$ tals que `s[j] == c`.
 
