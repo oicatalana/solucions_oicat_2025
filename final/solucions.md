@@ -570,7 +570,29 @@ img.save('output.png')
 
 ## [Problema C5. Eles](https://jutge.org/problems/T99685) <a name="C5"/>
 
-En construcció...
+Donat un tauler rectangular amb algunes caselles ocupades, hem de dir si és possible cobrir totes les caselles lliures amb peces en forma de 'L', tenint en compte que només es poden col·locar en forma de 'L' o girades 180 graus (és a dir, no es poden rotar arbitràriament).
+
+En general, aquest tipus de problemes no es poden resoldre en temps polinòmic. Si intentem explorar totes les maneres de col·locar les peces, a cada pas tenim 2 orientacions en les que podem col·locar la següent peça. Així doncs, trigarem un temps exponencial ($2^{\mathcal O(n)}$) a explorar totes les opcions. Per a valors de $n$ petits (per exemple, $n \leq 30$), podríem intentar implementar una estratègia de <a href="https://en.wikipedia.org/wiki/Backtracking">backtracking</a>, en la qual abandonem una branca de la cerca un cop hem determinat que no pot portar a una solució vàlida. No obstant, en aquest problema ens demanen resoldre per $n \leq 1000$, així que qualsevol algorisme amb cost exponencial és inviable.
+
+Això ens indica que hem d'utilitzar d'alguna manera les restriccions del problema per dissenyar una estratègia més eficient.
+
+En primer lloc, observem que l'ordre en què col·loquem les peces no importa, així que podem suposar que col·loquem les peces ordenades per la seva casella superior esquerre, en ordre creixent de fila (és a dir, de dalt a baix), i dins d'una fila en ordre creixent de columna (és a dir, d'esquerra a dreta). La gràcia de considerar les peces en aquest ordre és que a l'hora de processar una casella $(f, c)$, podem suposar que totes les caselles $(f', c')$ amb $f' < f$ o $f' = f$ i $c' < c$ ja han estat cobertes.
+
+Suposem doncs que estem processant la casella $(f, c)$. Si només hi podem col·locar o bé una 'L', o bé una 'L' girada, aleshores no tenim dubte que aquesta és la tria òptima. El problema pot venir si tenim la opció de col·locar-hi els dos tipus de peces. Com sabem llavors quina de les dues és millor col·locar?
+
+Aquí és on ens resultarà útil el fet d'estar processant les caselles en ordre. Si podem col·locar tant una 'L' com una 'L' girada amb l'extrem superior esquerre a la casella $(f, c)$, això vol dir que totes les caselles $(f', c')$ amb $f' \in \\\{f, f+1, f+2\\\}$ i $c' \in \\\{c, c+1\\\}$ estan lliures. Així doncs, si col·loquem la peça en forma de 'L', quedaran lliures les caselles $(f, c+1)$ i $(f+1, c+1)$. Donat que totes les caselles amb fila $< f$ ja estan cobertes, així com la casella $(f+2, c+1)$, la única manera de cobrir la casella $(f, c+1)$ serà amb l'extrem superior esquerre d'una 'L' girada. No obstant, llavors hauran quedat cobertes les caselles $(f, c+1)$, $(f+1, c)$, $(f+1, c+2)$ i $(f+2, c+1)$, mentre que la casella $(f+1, c+1)$ haurà quedat lliure, i serà impossible de cobrir.
+
+L'argument anterior justifica que si en algun moment tenim un dubte sobre si col·locar una peça en forma de 'L' o de 'L' girada, sempre resulta òptim col·locar la 'L' girada. Això no vol dir que no hi pugui haver un conflicte més tard havent col·locat la 'L' girada, però sí que si hi col·loquéssim la 'L' tindriem segur un conflicte. 
+
+Així doncs, l'algorisme serà el següent:
+
+1. Iterem per totes les caselles de dalt a baix (i dins d'una mateixa fila, d'esquerra a dreta).
+2. Si la casella actual ja està coberta, continuem. 
+3. Altrament, si podem col·locar una 'L' girada amb l'extrem superior esquerre a la casella actual, la col·loquem i continuem.
+3. Altrament, si podem col·locar una 'L' amb l'extrem superior esquerre a la casella actual, la col·loquem i continuem.
+4. Altrament, sortim del bucle i reportem que no existeix solució.   
+
+Observeu que la solució anterior només funciona degut a l'ordre en què processem les caselles (com hem justificat anteriorment), i que si apliquem el mateix algorisme però processant les caselles en un ordre diferent, podem obtenir un resultat incorrecte!
 
 <details><summary><b>Codi (C++)</b></summary>
 
@@ -610,13 +632,14 @@ int main(){
     for(int i = 0; i < n and es_possible; ++i) {
       for(int j = 0; j < m and es_possible; ++j) {
         if(tauler[i][j] == '.') {
-          // Si podem col·locar la 'L' del dret, la col·loquem.
+          // Si podem col·locar la 'L' girada, la col·loquem.
           if(EsPotColocar(i, j, true))
             Coloca(i, j, true);
-          // Altrament, mirem de col·locar-la del revés.
+          // Altrament, mirem de col·locar-la del dret.
           else if(EsPotColocar(i, j, false))
             Coloca(i, j, false);
           else 
+          // Altrament, no hi ha solució.
             es_possible = false;
         }
       }
