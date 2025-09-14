@@ -572,7 +572,7 @@ img.save('output.png')
 
 Donat un tauler rectangular amb algunes caselles ocupades, hem de dir si és possible cobrir totes les caselles lliures amb peces en forma de 'L', tenint en compte que només es poden col·locar en forma de 'L' o girades 180 graus (és a dir, no es poden rotar arbitràriament).
 
-En general, aquest tipus de problemes no es poden resoldre en temps polinòmic. Si intentem explorar totes les maneres de col·locar les peces, a cada pas tenim 2 orientacions en les que podem col·locar la següent peça. Així doncs, trigarem un temps exponencial ($2^{\mathcal O(n)}$) a explorar totes les opcions. Per a valors de $n$ petits (per exemple, $n \leq 30$), podríem intentar implementar una estratègia de <a href="https://en.wikipedia.org/wiki/Backtracking">backtracking</a>, en la qual abandonem una branca de la cerca un cop hem determinat que no pot portar a una solució vàlida. No obstant, en aquest problema ens demanen resoldre per $n \leq 1000$, així que qualsevol algorisme amb cost exponencial és inviable.
+En general, aquest tipus de problemes no es poden resoldre en temps polinòmic. Si intentem explorar totes les maneres de col·locar les peces, a cada pas tenim 2 orientacions en les que podem col·locar la següent peça. Així doncs, trigarem un temps exponencial ($2^{\mathcal O(n)}$) a explorar totes les opcions. Per a valors de $n$ petits (per exemple, $n \leq 30$), podríem intentar implementar una estratègia de <a href="https://en.wikipedia.org/wiki/Backtracking">backtracking</a>, en la qual abandonem una branca de la cerca un cop hem determinat que no pot portar a una solució vàlida. No obstant, en aquest problema ens demanen resoldre per $n \leq 1000$, així que qualsevol algorisme amb cost exponencial serà inviable.
 
 Això ens indica que hem d'utilitzar d'alguna manera les restriccions del problema per dissenyar una estratègia més eficient.
 
@@ -677,7 +677,7 @@ on definim $\text{acumulat}(c)$ com la suma de $f(j-1)$ per les $j$ tals que $s_
 
 Donat que ara només hem d'iterar pels 26 caràcters diferents (en lloc de per totes les posicions anteriors), això ens redueix la complexitat de la solució a $\mathcal O(26 \cdot n) = \mathcal O(n)$.
 
-Només falta veure que podem mantenir els valors de $\text{acumulat}(c)$ actualitzats eficientment. Però això és senzill: quan processem el caràcter $i$-èssim, afegim $f(i-1)$ a $\text{acumulat}(s_i)$. Simplement aneu amb compte de fer-ho abans de calcular $f(i)$, ja que és vàlid començar i acabar un segment a la posició $i$-èssima).
+Només falta veure que podem mantenir els valors de $\text{acumulat}(c)$ actualitzats eficientment. Però això és senzill: quan processem el caràcter $i$-èssim, afegim $f(i-1)$ a $\text{acumulat}(s_i)$. Simplement aneu amb compte de fer-ho abans de calcular $f(i)$, ja que és vàlid començar i acabar un segment a la posició $i$-èssima.
 
 A continuació us donem una possible implementació. També ho podeu fer amb una funció recursiva si ho preferiu, però recordeu utilitzar programació dinàmica per evitar repetir càlculs!
 
